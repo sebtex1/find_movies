@@ -2,10 +2,30 @@
 #include "ui_mainwindow.h"
 
 void MainWindow::downloadFinished(QNetworkReply *reply) {
-    QString replyText = reply->readAll();
-    //QJsonDocument doc = QJsonDocument::fromJson(replyText.toUtf8());
-    //QJsonObject obj = doc.object();
-    ui->textEdit->setText(replyText);
+    QString jsonStr = reply->readAll();
+    ui->response1->append(jsonStr);
+    QJsonDocument myJson = QJsonDocument::fromJson(jsonStr.toUtf8());
+    QJsonObject myObj = myJson.object();
+    if (myObj.isEmpty()) {
+        ui->response1->setText("Object is empty");
+    } else {
+        for (auto it = myObj.begin(); it != myObj.end(); it++) {
+            QString myStr = "Key-> " + it.key().toUtf8() + " : Value->";
+            if (it->isArray()) {
+                QJsonArray myArr = it->toArray();
+                QString myStrArr = "[";
+                for (auto ita = myArr.begin(); ita != myArr.end(); ita++) {
+                    myStrArr.append(ita->toString().toUtf8() + ", ");
+                }
+                myStrArr.append("]");
+                myStr.append(myStrArr);
+            } else {
+                myStr.append(it.value().toString());
+            }
+            ui->response1->append(myStr);
+        }
+
+    }
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -25,7 +45,8 @@ void MainWindow::on_pushButton_clicked()
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, this, &MainWindow::downloadFinished);
-    const QUrl url = QUrl(myUrl + "movie/550?" + apiKey + "&" + language);
+    const QString search = ui->textEditSearch1->toPlainText();
+    const QUrl url = QUrl(urlApi + "search/movie?" + apiKey + "&" + language + "&" + query + search);
     QNetworkRequest request(url);
     manager->get(request);
 }

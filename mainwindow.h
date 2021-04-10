@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QNetworkAccessManager> // to make requests
 #include <QNetworkReply> // to handle replies
-#include <QPixmap> // to work with images
+#include <QJsonArray> // to work with images
 #include <QSslSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -23,10 +23,10 @@ public:
     ~MainWindow();
 
 private:
-    QString myUrl = "https://api.themoviedb.org/3/";
-    // QString myUrl = "https://interactive-examples.mdn.mozilla.net/media/cc0-images/grapefruit-slice-332-332.jpg";
+    QString urlApi = "https://api.themoviedb.org/3/";
     QString apiKey = "api_key=968df0642a0c04c353f6f10c04456413";
     QString language = "language=fr-FR";
+    QString query = "query=";
     Ui::MainWindow *ui;
 
 private slots:
